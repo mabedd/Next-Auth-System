@@ -19,7 +19,7 @@ export default function SignIn() {
     fetchProviders();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await signIn("credentials", {
       redirect: false,
@@ -36,11 +36,29 @@ export default function SignIn() {
     }
   };
 
+  const handleMagicLinkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = await signIn("email", {
+      redirect: false,
+      email,
+    });
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      setError("");
+      // Inform the user to check their email for the magic link
+      alert("Check your email for the magic link!");
+    }
+  };
+
   return (
     <Container>
       <h1 className="text-2xl font-bold mb-6 text-center">Sign In</h1>
       {error && <p className="text-center text-red-500 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+
+      {/* Credentials Form */}
+      <form onSubmit={handleCredentialsSubmit} className="max-w-md mx-auto">
         <div className="mb-4">
           <label
             htmlFor="email"
@@ -86,13 +104,45 @@ export default function SignIn() {
           <div className="w-full border-t border-gray-300" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <span className="px-2 bg-white text-gray-500">
+            Or sign in with a Magic Link
+          </span>
         </div>
       </div>
 
+      {/* Magic Link Form */}
+      <form onSubmit={handleMagicLinkSubmit} className="max-w-md mx-auto mb-8">
+        <div className="mb-4">
+          <label
+            htmlFor="magic-email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            id="magic-email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition duration-200"
+        >
+          Send Magic Link
+        </button>
+      </form>
+
+      {/* Third-Party Providers */}
       {providers &&
         Object.values(providers)
-          .filter((provider) => provider.id !== "credentials")
+          .filter(
+            (provider) =>
+              provider.id !== "credentials" && provider.id !== "email"
+          )
           .map((provider) => (
             <div key={provider.name} className="mb-4">
               <button
