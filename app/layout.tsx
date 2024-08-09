@@ -1,3 +1,6 @@
+import Provider from "@/components/Provider";
+import "./globals.css";
+
 export default function RootLayout({
   children,
 }: {
@@ -6,9 +9,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground">
-        <div className="flex items-center justify-center min-h-screen">
-          {children}
-        </div>
+        <Provider>
+          <div className="flex items-center justify-center min-h-screen">
+            {children}
+          </div>
+        </Provider>
       </body>
     </html>
   );
